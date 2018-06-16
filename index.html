@@ -35,19 +35,14 @@
       <hr/>
       <h4 class="text-center">INCOME</h4>
       <div id="income-control-box" class="row mb-3">
-        <button class="col-sm-1 offset-sm-11 btn btn-success">
+        <button id="add-income-button" class="col-sm-1 offset-sm-11 btn btn-success">
           <i class="fas fa-plus"></i>
         </button>
       </div>
+
       <div id="income-container" class="row">
-        <div class="income-source mb-3 form-inline col-sm-12">
-          <button class="btn btn-default col-sm-1">
-            <i class="fas fa-times-circle"></i>
-          </button>
-          <input type="text" class="form-control col-sm-4 mr-1" placeholder="INCOME SOURCE"/>
-          <input type ="number" step="0.01" class="form-control col-sm-2  mr-1">
-        </div>
       </div>
+
       <div id="income-total-box" class="row">
         <span class="bold col-sm-8"><strong> TOTAL MONTHLY INCOME</strong></span>
         <input type="Number" value="0.00" class="form-control col-sm-4 text-right" readonly/>
@@ -57,20 +52,13 @@
       <hr/>
       <h4 class="text-center">Expenses</h4>
       <div id="expense-control-box" class="row mb-3">
-        <button class="col-sm-1 offset-sm-11 btn btn-danger">
+        <button id="add-expense-button" class="col-sm-1 offset-sm-11 btn btn-danger">
           <i class="fas fa-plus"></i>
         </button>
       </div>
 
 
-      <div id="expenses-container" class="row">
-        <div class="expense-source mb-3 form-inline col-sm-12">
-          <button class="btn btn-default col-sm-1">
-            <i class="fas fa-times-circle"></i>
-          </button>
-          <input type="text" class="form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE"/>
-          <input type ="number" step="0.01" class="form-control col-sm-2  mr-1">
-        </div>
+      <div id="expense-container" class="row">
       </div>
 
 
@@ -79,6 +67,66 @@
         <input type="Number" value="0.00" class="form-control col-sm-4 text-right" readonly/>
       </div>
     </div>
-    <!-- <h1>Budget Calculator</h1> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+      $(document).ready(()=>{
+        $(document).on('click','.remove-button',(event)=>{
+          let row = $(event.target).closest('.source').remove();
+        });
+
+        $('#add-income-button').on('click',(event)=>{
+          let source = $('#income-template').html();
+          let template = Handlebars.compile(source);
+          let html = template();
+          $('#income-container').append(html);
+        });
+
+        $('#add-expense-button').on('click',(event)=>{
+          let source = $('#expense-template').html();
+          let template = Handlebars.compile(source);
+          let html = template();
+          $('#expense-container').append(html);
+        });
+      });
+    </script>
+
+
+
+
+    <!-- handlebar template -->
+    <script id="income-template" type="text/x-handlebars-template">
+      <div class="income source mb-3 form-inline col-sm-12">
+        <button class="btn btn-default col-sm-1 remove-button">
+          <i class="fas fa-times-circle"></i>
+        </button>
+        <input type="text" class="form-control col-sm-4 mr-1" placeholder="INCOME SOURCE"/>
+        <input type ="number" step="0.01" class="form-control col-sm-2  mr-1">
+      </div>
+    </script>
+
+    <script id="expense-template" type="text/x-handlebars-template">
+      <div  class="expense source mb-3 form-inline col-sm-12">
+        <button  class="btn btn-default col-sm-1 remove-button">
+          <i class="fas fa-times-circle"></i>
+        </button>
+        <input type="text" class="form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE"/>
+        <input type ="number" step="0.01" class="form-control col-sm-2  mr-1">
+      </div>
+    </script>
+
+
+
   </body>
 </html>
