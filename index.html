@@ -19,6 +19,9 @@
     <!-- handlebars -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js" charset="utf-8"></script>
 
+    <!-- canvasjs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/canvasjs/1.7.0/canvasjs.min.js" charset="utf-8"></script>
+
   </head>
   <body class="">
     <nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
@@ -68,6 +71,8 @@
       </div>
     </div>
 
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
 
 
 
@@ -98,8 +103,8 @@
         $('#add-income-button').on('click', addIncome);
 
         $('#add-expense-button').on('click', addExpense);
-        addExpense();
-        addExpense();
+        // addExpense();
+        // addExpense();
       });
 
       let addIncome = ()=>{
@@ -146,6 +151,7 @@
           total += +(amount);
         });
         $('#expense-total').val(total.toFixed(2));
+        buildGraph();
       }
 
       function calculateIncomeTotals(){
@@ -157,7 +163,44 @@
         });
         incomeCount = incomeCount.toFixed(2);
         $('#income-total').val(incomeCount);
+        buildGraph();
       }
+
+      function buildGraph(){
+        let data = [];
+        let income = +($('#income-total').val());
+        let expenses = +($('#expense-total').val());
+        if (income <= 0 || $('.expense').length < 1){
+          return;
+        }
+        $('.expense').each((index, ele)=>{
+          let name = $(ele).find('.expense-name').val();
+          let cost = $(ele).find('.expense-value').html();
+          cost = +cost.split('$')[1];
+          let percent = (cost/income).toFixed(2);
+          data.push({y: ((+percent)*100), label: name});
+        });
+        let diff = income-expenses;
+        let surplusPercent = diff/income*100;
+        data.unshift({y: surplusPercent, label: "surplus"})
+        // console.log(data);
+        // debugger;
+        var chart = new CanvasJS.Chart("chartContainer", {
+        	animationEnabled: false,
+        	title: {
+        		text: "My Budget"
+        	},
+        	data: [{
+        		type: "pie",
+        		startAngle: 240,
+        		yValueFormatString: "##0.00\"%\"",
+        		indexLabel: "{label} {y}",
+        		dataPoints: data
+        	}]
+        });
+        chart.render();
+      }
+
     </script>
 
 
@@ -179,7 +222,7 @@
         <button  class="btn btn-default col-sm-1 remove-button">
           <i class="fas fa-times-circle"></i>
         </button>
-        <input type="text" class="form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE"/>
+        <input type="text" class="expense-name form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE"/>
         <input type ="text" step="0.01" class="form-control col-sm-2  mr-1 expense-input">
         <span class="expense-value col-sm-1 float-left offset-sm-3">$0.00</span>
       </div>
