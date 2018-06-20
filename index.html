@@ -24,6 +24,11 @@
 
   </head>
   <body class="">
+    <style>
+      a.canvasjs-chart-credit{
+        display: none;
+      }
+    </style>
     <nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
       <h2><a class="navbar-brand text-light" >Budget Calculator</a></h2>
     </nav>
@@ -66,12 +71,27 @@
 
 
       <div id="epense-total-box" class="row mb-3">
-        <span class="bold col-sm-8"><strong> TOTAL MONTHLY EXPENSES</strong></span>
+        <span class="bold col-sm-8"><strong>TOTAL MONTHLY EXPENSES</strong></span>
         <input id="expense-total" type="Number" value="0.00" class="form-control col-sm-4 text-right" readonly/>
       </div>
+
+      <div class="row mb-3">
+        <!-- <span class="bold col-sm-8"><strong>DIFFERENCE</strong></span> -->
+        <input id="diff-box" type="text" class="form-control text-right col-sm-4 offset-sm-8" value="$0.00" readonly/>
+      </div>
+
     </div>
 
     <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
+    <div class="container mb-5">
+      <div class="row">
+        <button id="new-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">New Budget</button>
+        <button id="load-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">Load Budget</button>
+        <button id="save-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">Save Budget</button>
+      </div>
+    </div>
+
 
 
 
@@ -99,6 +119,12 @@
         $(document).on('change','.expense-input',(event)=>{
           updateExpenseViews();
         });
+
+        $('#new-budget').on('click', ()=>{resetBudget(true)});
+
+        $('#load-budget').on('click', loadBudget);
+
+        $('#save-budget').on('click', saveBudget);
 
         $('#add-income-button').on('click', addIncome);
 
@@ -170,6 +196,9 @@
         let data = [];
         let income = +($('#income-total').val());
         let expenses = +($('#expense-total').val());
+        let diff = income-expenses;
+        let surplusPercent = diff/income*100;
+        setDiff(diff);
         if (income <= 0 || $('.expense').length < 1){
           return;
         }
@@ -180,8 +209,7 @@
           let percent = (cost/income).toFixed(2);
           data.push({y: ((+percent)*100), label: name});
         });
-        let diff = income-expenses;
-        let surplusPercent = diff/income*100;
+
         data.unshift({y: surplusPercent, label: "surplus"})
         // console.log(data);
         // debugger;
@@ -199,6 +227,43 @@
         	}]
         });
         chart.render();
+      }
+
+      function setDiff(diff){
+        $('#diff-box').val(`${diff>=0?'':'-'}$${Math.abs(diff).toFixed(2)}`);
+        if(diff > 0){
+          $('#diff-box').addClass('bg-success text-light');
+          $('#diff-box').removeClass('bg-danger');
+        }else if(diff === 0){
+          $('#diff-box').removeClass('bg-success text-light');
+          $('#diff-box').removeClass('bg-danger text-light');
+        }else{
+          $('#diff-box').removeClass('bg-success');
+          $('#diff-box').addClass('bg-danger text-light');
+        }
+      }
+
+      function resetBudget(verify){
+        if(verify){
+          if(!confirm('All unsaved budget data will be lost. Are you sure?')){
+            return
+          }
+        }
+        $('#income-container').empty();
+        $('#income-total').val('0.00');
+        $('#expense-container').empty();
+        $('#expense-total').val('0.00');
+
+        var chart = new CanvasJS.Chart("chartContainer", {});
+        buildGraph();
+      }
+
+      function loadBudget(){
+        console.log('load budget');
+      }
+
+      function saveBudget(){
+        console.log('save budget');
       }
 
     </script>
