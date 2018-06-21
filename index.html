@@ -24,11 +24,16 @@
 
   </head>
   <body class="">
+
     <style>
       a.canvasjs-chart-credit{
         display: none;
       }
+      .tiny-font{
+        font-size: .7em;
+      }
     </style>
+
     <nav class="navbar navbar-expand-lg  navbar-dark bg-dark">
       <h2><a class="navbar-brand text-light" >Budget Calculator</a></h2>
     </nav>
@@ -88,12 +93,36 @@
       <div class="row">
         <button id="new-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">New Budget</button>
         <button id="load-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">Load Budget</button>
-        <button id="save-budget" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">Save Budget</button>
+        <button id="save-budget-modal-trigger" class="btn btn-sm btn-primary col-sm-4 btn-outline-dark">Save Budget</button>
       </div>
     </div>
 
 
 
+    <div id="saveModal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Save Budget</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row">
+                <input id="save-name" class="form-control" placeholder="Budget Name"></input>
+                <span class="tiny-font">All budgets are saved locally. To reaccess your budget, please load it using the same device you saved it on.</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="save-budget" type="button" class="btn btn-outline-dark">Save changes</button>
+            <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
@@ -124,6 +153,8 @@
 
         $('#load-budget').on('click', loadBudget);
 
+        $('#save-budget-modal-trigger').on('click', saveBudgetModal);
+
         $('#save-budget').on('click', saveBudget);
 
         $('#add-income-button').on('click', addIncome);
@@ -140,7 +171,7 @@
         $('#income-container').append(html);
       }
 
-      let addExpense = (event)=>{
+      let addExpense = ()=>{
         let source = $('#expense-template').html();
         let template = Handlebars.compile(source);
         let html = template();
@@ -211,8 +242,6 @@
         });
 
         data.unshift({y: surplusPercent, label: "surplus"})
-        // console.log(data);
-        // debugger;
         var chart = new CanvasJS.Chart("chartContainer", {
         	animationEnabled: false,
         	title: {
@@ -262,8 +291,49 @@
         console.log('load budget');
       }
 
+      function saveBudgetModal(){
+        $('#saveModal').modal('toggle');
+      }
+
       function saveBudget(){
-        console.log('save budget');
+        let saveNameValue = $('#save-name').val();
+        if(localStorage.getItem(saveNameValue)){
+          if(!confirm(`There is already a saved budget called "${saveNameValue}"". Would you like to overwrite it?`)){
+            return;
+          }
+        }
+
+        let budget = {};
+        budget.name = saveNameValue;
+        budget.dateSaved = Date.now();
+        budget.incomes = [];
+        budget.expenses =[];
+        $('.income').each((index, ele)=>{
+          budget.incomes.push({
+            name: $(ele).find('.income-input').val(),
+            value: Number($(ele).find('.income-amount').val())
+          });
+        });
+
+        $('.expense').each((index, ele)=>{
+          let val = $(ele).find('.expense-input').val();
+          if(val.indexOf('%') > -1){
+            let percentage = val.split('%')[0];
+            if(isNaN(percentage)){
+              val = 0;
+            }
+          }else{
+            val = Number(val);
+          }
+
+          budget.expenses.push({
+            name: $(ele).find('.expense-name').val(),
+            value: val
+          });
+        });
+        localStorage.setItem(saveNameValue, JSON.stringify(budget));
+        $('#save-name').val('')
+        $('#saveModal').modal('toggle');
       }
 
     </script>
