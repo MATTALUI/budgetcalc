@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="icon" href="https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/currency_dollar.png">
 
     <!-- jquery -->
     <script
@@ -223,7 +224,18 @@
         $('#add-income-button').on('click', addIncome);
 
         $('#add-expense-button').on('click', addExpense);
+
+        $(document).on('click', '.delete-load', deleteLoad);
       });
+
+      let deleteLoad = (event)=>{
+        if(confirm('This will permanently delete this budget. Are you sure?')){
+          let $row = $(event.target).closest('tr');
+          let key = $row.find('td').first().html();
+          $row.remove();
+          localStorage.removeItem(key);
+        }
+      }
 
       let addIncome = (event, context)=>{
         if (context === undefined || context.length === 0){
@@ -238,7 +250,7 @@
         $('#income-container').append(html);
       }
 
-      let addExpense = (context)=>{
+      let addExpense = (event, context)=>{
         if (context === undefined || context.length === 0){
           context = {};
         }
@@ -368,6 +380,44 @@
         let button = $(this);
         let incomes = button.data('incomes');
         let expenses = button.data('expenses');
+        $('#income-container').empty();
+        incomes.forEach((income, index)=>{
+          addIncome(null, income);
+        });
+        $('.income-input').first().change();
+
+        $('#expense-container').empty();
+        expenses.forEach((expense, index)=>{
+          addExpense(null, expense);
+        });
+
+        $('.expense').each((i,ele)=>{
+          let $ele = $(ele);
+          let $expenseValuePanel = $ele.find('.expense-value');
+          let val = $ele.find('.expense-input').val();
+          // debugger;
+          if (val.indexOf('%') > -1){
+            let percentage = val.split('%')[0];
+            if(isNaN(percentage)){
+              $ele.find('.expense-input').val('');
+              $expenseValuePanel.html('$0.00');
+            }else{
+              percentage = +percentage;
+              let incomeTotal = +($('#income-total').val());
+              let value = (incomeTotal * (percentage/100)).toFixed(2);
+              $expenseValuePanel.html(`$${value}`);
+            }
+          }else if(isNaN(val)){
+            $ele.find('.expense-input').val('');
+            $expenseValuePanel.html('$0.00');
+          }else{
+            $expenseValuePanel.html(`$${(+val).toFixed(2)}`);
+          }
+
+        });
+        calculateExpenseTotals()
+
+        $('#loadModal').modal('toggle');
       }
 
       function saveBudget(){
@@ -432,8 +482,8 @@
         <button  class="btn btn-default col-sm-1 remove-button">
           <i class="fas fa-times-circle"></i>
         </button>
-        <input type="text" class="expense-name form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE"/>
-        <input type ="text" step="0.01" class="form-control col-sm-2  mr-1 expense-input">
+        <input type="text" class="expense-name form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE" value="{{name}}">
+        <input type ="text" step="0.01" class="form-control col-sm-2  mr-1 expense-input" value="{{value}}">
         <span class="expense-value col-sm-1 float-left offset-sm-3">$0.00</span>
       </div>
     </script>
@@ -443,11 +493,11 @@
         <td>{{name}}</td>
         <td>{{date}}</td>
         <td>
-          <button class="btn btn-outline-success load-budget" data-incomes={{incomes}} data-expenses={{expenses}}>
+          <button class="btn btn-outline-success load-budget" data-incomes='{{incomes}}' data-expenses='{{expenses}}'>
             <i class="fas fa-check-circle"></i>
             </button></td>
         <td>
-          <button class="btn btn-outline-danger">
+          <button class="btn btn-outline-danger delete-load">
             <i class="fas fa-trash"></i>
           </button>
         </td>
