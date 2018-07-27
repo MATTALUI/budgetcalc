@@ -176,6 +176,13 @@
 
 
     <script>
+      var budgetInfo = (function(){
+        var name = "My Budget"
+        return {
+          getName: function(){ return name },
+          setName: function(newName){ name = newName; return newName }
+        }
+      })()
       $(document).ready(()=>{
         $(document).on('click','.remove-button',(event)=>{
           let row = $(event.target).closest('.source').remove();
@@ -334,7 +341,7 @@
         var chart = new CanvasJS.Chart("chartContainer", {
         	animationEnabled: false,
         	title: {
-        		text: "My Budget"
+        		text:  budgetInfo.getName()
         	},
         	data: [{
         		type: "pie",
@@ -377,6 +384,8 @@
       }
 
       function loadBudget(){
+        let name = $(this).closest('.load-row').find('.load-name').html();
+        budgetInfo.setName(name);
         let button = $(this);
         let incomes = button.data('incomes');
         let expenses = button.data('expenses');
@@ -422,6 +431,8 @@
 
       function saveBudget(){
         let saveNameValue = $('#save-name').val();
+        budgetInfo.setName(saveNameValue);
+        buildGraph();
         if(localStorage.getItem(saveNameValue)){
           if(!confirm(`There is already a saved budget called "${saveNameValue}"". Would you like to overwrite it?`)){
             return;
@@ -489,8 +500,8 @@
     </script>
 
     <script id="load-file-template" type="text/x-handlebar-template">
-      <tr>
-        <td>{{name}}</td>
+      <tr class="load-row">
+        <td class="load-name">{{name}}</td>
         <td>{{date}}</td>
         <td>
           <button class="btn btn-outline-success load-budget" data-incomes='{{incomes}}' data-expenses='{{expenses}}'>
