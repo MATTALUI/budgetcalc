@@ -176,7 +176,7 @@
 
 
     <script>
-      var budgetInfo = (function(){
+      const budgetInfo = (function(){
         var name = "My Budget"
         return {
           getName: function(){ return name },
@@ -279,6 +279,9 @@
       function updateExpenseViews(){
         let $expenseValuePanel = $(event.target).closest('.expense').find('.expense-value');
         let inputValue = $(event.target).val();
+        if(inputValue[0] === "~"){
+          inputValue = inputValue.substring(1);
+        }
         if(inputValue.indexOf('%') > -1){
           let incomeTotal = +($('#income-total').val());
           let percentage = $(event.target).val().split('%')[0];
@@ -313,6 +316,9 @@
         let incomeCount = 0.0;
         $('.income').each((index, ele)=>{
           let amount = $(ele).find('.income-amount').val();
+          if(amount[0] === "~"){
+            amount = amount.substring(1);
+          }
           amount = +amount;
           incomeCount += amount;
         });
