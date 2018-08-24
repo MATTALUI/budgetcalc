@@ -4,10 +4,8 @@
     <link rel="icon" href="https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/currency_dollar.png">
 
     <!-- jquery -->
-    <script
-  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
-  crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 
     <!-- bootstrap 4 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
@@ -235,7 +233,16 @@
         $('#add-expense-button').on('click', addExpense);
 
         $(document).on('click', '.delete-load', deleteLoad);
+
+        addIncome(null, {name: 1, value: 1});
+        addIncome(null, {name: 2, value: 2});
+        addIncome(null, {name: 3, value: 3});
+        addExpense(null, {name: 1, value: 1});
+        addExpense(null, {name: 2, value: 2});
+        addExpense(null, {name: 3, value: 3});
       });
+      $('#income-container').sortable();
+      $('#expense-container').sortable();
 
       let deleteLoad = (event)=>{
         if(confirm('This will permanently delete this budget. Are you sure?')){
@@ -479,7 +486,6 @@
         $('#save-name').val('')
         $('#saveModal').modal('toggle');
       }
-
     </script>
 
 
@@ -488,22 +494,28 @@
     <!-- handlebar template -->
     <script id="income-template" type="text/x-handlebars-template">
       <div class="income source mb-3 form-inline col-sm-12">
-        <button class="btn btn-default col-sm-1 remove-button">
-          <i class="fas fa-times-circle"></i>
-        </button>
+        <div class="btn btn-default">
+          <i class="fas fa-bars"></i>
+        </div>
         <input type="text" class="income-input form-control col-sm-4 mr-1" placeholder="INCOME SOURCE" value="{{name}}">
         <input type ="number" step="0.01" class="income-input form-control col-sm-2  mr-1 income-amount" value="{{value}}"/>
+        <button class="btn btn-default remove-button">
+          <i class="fas fa-times-circle"></i>
+        </button>
       </div>
     </script>
 
     <script id="expense-template" type="text/x-handlebars-template">
       <div  class="expense source mb-3 form-inline col-sm-12">
-        <button  class="btn btn-default col-sm-1 remove-button">
-          <i class="fas fa-times-circle"></i>
-        </button>
+        <div class="btn btn-default">
+          <i class="fas fa-bars"></i>
+        </div>
         <input type="text" class="expense-name form-control col-sm-4 mr-1" placeholder="EXPENSE SOURCE" value="{{name}}">
         <input type ="text" step="0.01" class="form-control col-sm-2  mr-1 expense-input" value="{{value}}">
-        <span class="expense-value col-sm-1 float-left offset-sm-3">$0.00</span>
+        <button  class="btn btn-default remove-button">
+          <i class="fas fa-times-circle"></i>
+        </button>
+        <span class="expense-value col-sm-1 float-left offset-sm-4">$0.00</span>
       </div>
     </script>
 
