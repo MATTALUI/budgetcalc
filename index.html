@@ -233,13 +233,6 @@
         $('#add-expense-button').on('click', addExpense);
 
         $(document).on('click', '.delete-load', deleteLoad);
-
-        addIncome(null, {name: 1, value: 1});
-        addIncome(null, {name: 2, value: 2});
-        addIncome(null, {name: 3, value: 3});
-        addExpense(null, {name: 1, value: 1});
-        addExpense(null, {name: 2, value: 2});
-        addExpense(null, {name: 3, value: 3});
       });
       $('#income-container').sortable();
       $('#expense-container').sortable();
