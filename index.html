@@ -424,6 +424,9 @@
               let value = (incomeTotal * (percentage/100)).toFixed(2);
               $expenseValuePanel.html(`$${value}`);
             }
+          }else if(val[0]==='~'){
+            val = val.substring(1);
+            $expenseValuePanel.html(`$${(+val).toFixed(2)}`);
           }else if(isNaN(val)){
             $ele.find('.expense-input').val('');
             $expenseValuePanel.html('$0.00');
@@ -466,6 +469,8 @@
             if(isNaN(percentage)){
               val = 0;
             }
+          }else if(val[0] === '~'){
+            val = val;
           }else{
             val = Number(val);
           }
