@@ -412,7 +412,6 @@
           let $ele = $(ele);
           let $expenseValuePanel = $ele.find('.expense-value');
           let val = $ele.find('.expense-input').val();
-          // debugger;
           if (val.indexOf('%') > -1){
             let percentage = val.split('%')[0];
             if(isNaN(percentage)){
