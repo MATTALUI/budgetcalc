@@ -435,13 +435,21 @@
         let expenses = button.data('expenses');
         $('#income-container').empty();
         incomes.forEach((income, index)=>{
-          addIncome(null, income);
+          if(income.category){
+            addCategory(income.category, 'income');
+          }else{
+            addIncome(null, income);
+          }
         });
         $('.income-input').first().change();
 
         $('#expense-container').empty();
         expenses.forEach((expense, index)=>{
-          addExpense(null, expense);
+          if(expense.category){
+            addCategory(expense.category, 'expense');
+          }else{
+            addExpense(null, expense);
+          }
         });
 
         $('.expense').each((i,ele)=>{
@@ -490,30 +498,46 @@
         budget.dateSaved = Date.now();
         budget.incomes = [];
         budget.expenses =[];
-        $('.income').each((index, ele)=>{
-          budget.incomes.push({
-            name: $(ele).find('.income-input').val(),
-            value: Number($(ele).find('.income-amount').val())
-          });
+        $('#income-container').children().each((index, ele)=>{
+          let inc;
+          if($(ele).hasClass('category')){
+            inc = {
+              category: $(ele).find('.category-title').html()
+            };
+          }else{
+            inc = {
+              name: $(ele).find('.income-input').val(),
+              value: Number($(ele).find('.income-amount').val())
+            };
+          }
+          budget.incomes.push(inc)
         });
 
-        $('.expense').each((index, ele)=>{
-          let val = $(ele).find('.expense-input').val();
-          if(val.indexOf('%') > -1){
-            let percentage = val.split('%')[0];
-            if(isNaN(percentage)){
-              val = 0;
-            }
-          }else if(val[0] === '~'){
-            val = val;
+        $('#expense-container').children().each((index, ele)=>{
+          let exp;
+          if($(ele).hasClass('category')){
+            exp = {
+              category: $(ele).find('.category-title').html()
+            };
           }else{
-            val = Number(val);
+            let val = $(ele).find('.expense-input').val();
+            if(val.indexOf('%') > -1){
+              let percentage = val.split('%')[0];
+              if(isNaN(percentage)){
+                val = 0;
+              }
+            }else if(val[0] === '~'){
+              val = val;
+            }else{
+              val = Number(val);
+            }
+            exp = {
+              name: $(ele).find('.expense-name').val(),
+              value: val
+            }
           }
 
-          budget.expenses.push({
-            name: $(ele).find('.expense-name').val(),
-            value: val
-          });
+          budget.expenses.push(exp);
         });
         localStorage.setItem(saveNameValue, JSON.stringify(budget));
         $('#save-name').val('')
@@ -585,7 +609,7 @@
 
     <script id="category-template" type="text/x-handlebars-template">
       <div class="bg-dark text-center text-light category" style="width:100%;">
-        <h6>{{title}} <i class="fas fa-times-circle clickable remove-category"></i></h6>
+        <h6><span class="category-title">{{title}}</span> <i class="fas fa-times-circle clickable remove-category"></i></h6>
       </div>
     </script>
 
