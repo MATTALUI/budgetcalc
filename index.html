@@ -200,10 +200,13 @@
 
     <script>
       const budgetInfo = (function(){
-        var name = "My Budget"
+        var name = "My Budget";
+        var loadFile = false;
         return {
           getName: function(){ return name },
-          setName: function(newName){ name = newName; return newName }
+          setName: function(newName){ name = newName; return newName },
+          getLoadFile: function(){return loadFile},
+          setLoadFile: function(setting=true){ loadFile = setting; return loadFile}
         }
       })()
       $(document).ready(()=>{
@@ -225,6 +228,13 @@
         $('#new-budget').on('click', ()=>{resetBudget(true)});
 
         $('#save-budget-modal-trigger').on('click', ()=>{
+          let val;
+          if(budgetInfo.getLoadFile()){
+            val = budgetInfo.getName();
+          }else{
+            val = null;
+          };
+          $('#save-name').val(val);
           $('#saveModal').modal('toggle');
         });
 
@@ -264,6 +274,7 @@
         });
 
         $('#new-category').on('click', createCategory);
+
         $(document).on('click', '.remove-category', ()=>{
           $(event.target).closest('.category').remove();
         });
@@ -481,6 +492,7 @@
         calculateExpenseTotals()
 
         $('#loadModal').modal('toggle');
+        budgetInfo.setLoadFile(true);
       }
 
       function saveBudget(){
