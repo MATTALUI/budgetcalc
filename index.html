@@ -202,11 +202,24 @@
       const budgetInfo = (function(){
         var name = "My Budget";
         var loadFile = false;
+        var incomes = [];
+        var expenses = [];
         return {
           getName: function(){ return name },
           setName: function(newName){ name = newName; return newName },
           getLoadFile: function(){return loadFile},
-          setLoadFile: function(setting=true){ loadFile = setting; return loadFile}
+          setLoadFile: function(setting=true){ loadFile = setting; return loadFile},
+          getIncomes: function(){return incomes },
+          setIncomes: function(newIncomes){incomes=newIncomes;return incomes},
+          setExpenses: function(newExpenses){expenses=newExpenses;return expenses},
+          getExpenses: function(){ return expenses },
+          resetData: function(){
+            name = "My Budget";
+            loadFile = false;
+            incomes = [];
+            expenses = [];
+            return true
+          },
         }
       })()
       $(document).ready(()=>{
@@ -429,6 +442,7 @@
             return
           }
         }
+        budgetInfo.resetData();
         $('#income-container').empty();
         $('#income-total').val('0.00');
         $('#expense-container').empty();
@@ -444,6 +458,8 @@
         let button = $(this);
         let incomes = button.data('incomes');
         let expenses = button.data('expenses');
+        budgetInfo.setIncomes(incomes);
+        budgetInfo.setExpenses(expenses);
         $('#income-container').empty();
         incomes.forEach((income, index)=>{
           if(income.category){
